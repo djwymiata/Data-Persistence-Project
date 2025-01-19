@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -38,10 +39,16 @@ public class MainManager : MonoBehaviour
         }
 
         ScoreText.text = $"{GlobalInfoData.Instance.PlayerName}, Your Score : 0";
+        UpdateBestScore();
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
+
         if (!m_Started)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -72,8 +79,22 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        if (m_Points > GlobalInfoData.Instance.recordData.recordScore)
+        {
+            GlobalInfoData.Instance.recordData.recordPlayerName = GlobalInfoData.Instance.PlayerName;
+            GlobalInfoData.Instance.recordData.recordScore = m_Points;
+            UpdateBestScore();
+        }
+    }
+
+    public void UpdateBestScore()
+    {
+        BestScoreText.text = $"Best Score : {GlobalInfoData.Instance.recordData.recordPlayerName} : {GlobalInfoData.Instance.recordData.recordScore}";
+        GlobalInfoData.Instance.SaveRecordData();
     }
 
 }
